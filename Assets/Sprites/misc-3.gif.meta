@@ -461,7 +461,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -483,7 +483,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -492,6 +492,94 @@ TextureImporter:
       bones: []
       spriteID: c2a4f5726f27b4e4ab110be07f4df973
       internalID: 901105775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: background-world2
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 858
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 090cdfaa6e8854164bf629603a533aa9
+      internalID: 1250643361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground-world2
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 1112
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d77a877c5243442f7a34820726a6905c
+      internalID: 176161933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: castle-world2
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 566
+        width: 112
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83daa0dca62b648b89914b892a9e8834
+      internalID: -238403640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 1193
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63240e9f874c84796a9382d8818f496c
+      internalID: 1057225104
       vertices: []
       indices: 
       edges: []
@@ -514,15 +602,19 @@ TextureImporter:
       Pipe-Head: -1176629263
       Question Box: 1355091517
       background: 2143269675
+      background-world2: 1250643361
       brick: 1009918764
       brown_goomba_1: 1808957243
       castle: 114713500
+      castle-world2: -238403640
       cloud: 230505852
       cloud2: -1059070446
       coin: -1076536106
       ground: -1523138582
+      ground-world2: 176161933
       misc-3_0: 1198777401
       moving_platform_6: 1240270866
+      mushroom: 1057225104
       questionbox_bright: 570688998
       questionbox_empty: 901105775
       star1: 419604622

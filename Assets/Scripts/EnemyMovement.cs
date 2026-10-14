@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    public GameConstants gameConstants;
+
     [System.NonSerialized]
     public Vector3 startPosition;
 
     private float originalX;
-    private float maxOffset = 5.0f;
-    private float enemyPatroltime = 2.0f;
+    private float maxOffset;
+    private float enemyPatroltime;
     private int moveRight = -1;
     private Vector2 velocity;
 
@@ -17,12 +17,12 @@ public class EnemyMovement : MonoBehaviour
 
     void Start()
     {
+        maxOffset = gameConstants.goombaMaxOffset;
+        enemyPatroltime = gameConstants.goombaPatrolTime;
+
         enemyBody = GetComponent<Rigidbody2D>();
 
-        // save starting position for restart
         startPosition = transform.localPosition;
-
-        // get the starting position
         originalX = transform.position.x;
 
         ComputeVelocity();
@@ -47,15 +47,21 @@ public class EnemyMovement : MonoBehaviour
     {
         if (Mathf.Abs(enemyBody.position.x - originalX) < maxOffset)
         {
-            // move goomba
             Movegoomba();
         }
         else
         {
-            // change direction
             moveRight *= -1;
             ComputeVelocity();
             Movegoomba();
         }
+    }
+
+    public void GameRestart()
+    {
+        transform.localPosition = startPosition;
+        originalX = transform.position.x;
+        moveRight = -1;
+        ComputeVelocity();
     }
 }

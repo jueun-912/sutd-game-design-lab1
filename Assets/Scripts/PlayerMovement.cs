@@ -1,90 +1,198 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPowerupApplicable
 {
-    public float upSpeed = 20;
-    private bool onGroundState = true;
+    public GameConstants gameConstants;
 
-    public float maxSpeed = 30;
-    public float speed = 15;
+    private float upSpeed;
+    private float maxSpeed;
+    private float speed;
+    private float deathImpulse;
+
+    private bool onGroundState = true;
+    private bool faceRightState = true;
+    private bool moving = false;
+    private bool jumpedState = false;
 
     private Rigidbody2D marioBody;
     private SpriteRenderer marioSprite;
-    private bool faceRightState = true;
-
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI gameOverScoreText;
-
-    public GameObject enemies;
-    public GameObject hud;
-    public GameObject gameOverPanel;
+    private Collider2D marioCollider;
 
     public AudioClip marioDeath;
-    public float deathImpulse = 15;
 
     [System.NonSerialized]
     public bool alive = true;
 
     private Vector3 marioStartPosition;
+    private Vector3 cameraStartPosition;
+    private Vector3 originalScale;
 
-    public JumpOverGoomba jumpOverGoomba;
+    private bool isSuper;
+    private bool invincible;
 
-    // for animation
     public Animator marioAnimator;
-
-    // for audio
     public AudioSource marioAudio;
-
-    // for camera
+    public AudioSource marioDeathAudio;
     public Transform gameCamera;
 
-    // Ground + Enemies + Obstacles
-    int collisionLayerMask = (1 << 3) | (1 << 6) | (1 << 7);
+    private int collisionLayerMask =
+        (1 << 3) | (1 << 6) | (1 << 7);
+
+    void Awake()
+    {
+        GameManager.instance.gameRestart.AddListener(GameRestart);
+    }
 
     void Start()
     {
+        speed = gameConstants.speed;
+        maxSpeed = gameConstants.maxSpeed;
+        deathImpulse = gameConstants.deathImpulse;
+        upSpeed = gameConstants.upSpeed;
+
         Application.targetFrameRate = 30;
 
         marioBody = GetComponent<Rigidbody2D>();
         marioSprite = GetComponent<SpriteRenderer>();
+        marioCollider = GetComponent<Collider2D>();
 
-        // save Mario's starting position
         marioStartPosition = transform.position;
+        originalScale = transform.localScale;
 
-        hud.SetActive(true);
-        gameOverPanel.SetActive(false);
+        if (Camera.main != null)
+        {
+            gameCamera = Camera.main.transform;
+        }
 
-        // update animator state
+        if (gameCamera != null)
+        {
+            cameraStartPosition = gameCamera.position;
+        }
+
         marioAnimator.SetBool("onGround", onGroundState);
+    }
+
+    void OnDestroy()
+    {
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.gameRestart.RemoveListener(GameRestart);
+        }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown("a") && faceRightState)
-        {
-            faceRightState = false;
-            marioSprite.flipX = true;
-
-            if (marioBody.linearVelocity.x > 0.1f)
-                marioAnimator.SetTrigger("onSkid");
-        }
-
-        if (Input.GetKeyDown("d") && !faceRightState)
-        {
-            faceRightState = true;
-            marioSprite.flipX = false;
-
-            if (marioBody.linearVelocity.x < -0.1f)
-                marioAnimator.SetTrigger("onSkid");
-        }
-
         marioAnimator.SetFloat(
             "xSpeed",
             Mathf.Abs(marioBody.linearVelocity.x)
         );
+    }
+
+    void LateUpdate()
+    {
+        // AnimatorがScaleを変更してもパワーアップのサイズを保つ
+        transform.localScale =
+            originalScale * (isSuper ? 1.5f : 1f);
+    }
+
+    public void RequestPowerupEffect(IPowerup powerup)
+    {
+        if (!alive)
+            return;
+
+        if (powerup.powerupType == PowerupType.MagicMushroom)
+        {
+            isSuper = true;
+            transform.localScale = originalScale * 1.5f;
+
+            Debug.Log("Magic Mushroom applied!");
+        }
+    }
+
+    void FlipMarioSprite(int value)
+    {
+        if (value == -1 && faceRightState)
+        {
+            faceRightState = false;
+            marioSprite.flipX = true;
+
+            if (marioBody.linearVelocity.x > 0.05f)
+            {
+                marioAnimator.SetTrigger("onSkid");
+            }
+        }
+        else if (value == 1 && !faceRightState)
+        {
+            faceRightState = true;
+            marioSprite.flipX = false;
+
+            if (marioBody.linearVelocity.x < -0.05f)
+            {
+                marioAnimator.SetTrigger("onSkid");
+            }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (alive && moving)
+        {
+            Move(faceRightState ? 1 : -1);
+        }
+    }
+
+    void Move(int value)
+    {
+        Vector2 movement = new Vector2(value, 0);
+
+        if (marioBody.linearVelocity.magnitude < maxSpeed)
+        {
+            marioBody.AddForce(movement * speed);
+        }
+    }
+
+    public void MoveCheck(int value)
+    {
+        if (value == 0 || !alive)
+        {
+            moving = false;
+        }
+        else
+        {
+            FlipMarioSprite(value);
+            moving = true;
+            Move(value);
+        }
+    }
+
+    public void Jump()
+    {
+        if (alive && onGroundState)
+        {
+            marioBody.AddForce(
+                Vector2.up * upSpeed,
+                ForceMode2D.Impulse
+            );
+
+            onGroundState = false;
+            jumpedState = true;
+
+            marioAnimator.SetBool("onGround", onGroundState);
+        }
+    }
+
+    public void JumpHold()
+    {
+        if (alive && jumpedState)
+        {
+            marioBody.AddForce(
+                Vector2.up * upSpeed * 30,
+                ForceMode2D.Force
+            );
+
+            jumpedState = false;
+        }
     }
 
     void PlayDeathImpulse()
@@ -95,15 +203,9 @@ public class PlayerMovement : MonoBehaviour
         );
     }
 
-    void GameOverScene()
+    public void GameOverScene()
     {
-        gameOverScoreText.text =
-            "Score: " + jumpOverGoomba.score.ToString();
-
-        hud.SetActive(false);
-        gameOverPanel.SetActive(true);
-
-        Time.timeScale = 0.0f;
+        GameManager.instance.GameOver();
     }
 
     void PlayJumpSound()
@@ -111,104 +213,117 @@ public class PlayerMovement : MonoBehaviour
         marioAudio.PlayOneShot(marioAudio.clip);
     }
 
-    void FixedUpdate()
-    {
-        if (alive)
-        {
-            float moveHorizontal = Input.GetAxisRaw("Horizontal");
-
-            if (Mathf.Abs(moveHorizontal) > 0)
-            {
-                Vector2 movement =
-                    new Vector2(moveHorizontal, 0);
-
-                if (marioBody.linearVelocity.magnitude < maxSpeed)
-                    marioBody.AddForce(movement * speed);
-            }
-
-            if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
-            {
-                marioBody.linearVelocity = Vector2.zero;
-            }
-
-            if (Input.GetKeyDown("space") && onGroundState)
-            {
-                marioBody.AddForce(
-                    Vector2.up * upSpeed,
-                    ForceMode2D.Impulse
-                );
-
-                onGroundState = false;
-
-                // update animator state
-                marioAnimator.SetBool(
-                    "onGround",
-                    onGroundState
-                );
-            }
-        }
-    }
-
     void OnCollisionEnter2D(Collision2D col)
     {
         if (((collisionLayerMask &
              (1 << col.transform.gameObject.layer)) > 0)
-             && !onGroundState)
+            && !onGroundState)
         {
             onGroundState = true;
+            jumpedState = false;
 
-            marioAnimator.SetBool(
-                "onGround",
-                onGroundState
-            );
+            marioAnimator.SetBool("onGround", onGroundState);
         }
     }
 
-    public void RestartButtonCallback(int input)
-    {
-        Debug.Log("Restart!");
-
-        ResetGame();
-
-        gameOverPanel.SetActive(false);
-        hud.SetActive(true);
-
-        Time.timeScale = 1.0f;
-    }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Enemy") && alive)
-        {
-            Debug.Log("Collided with goomba!");
+        if (!other.gameObject.CompareTag("Enemy") || !alive)
+            return;
 
-            marioAnimator.Play("mario-die");
-            marioAudio.PlayOneShot(marioDeath);
-            alive = false;
+        GoombaStomp goomba = other.GetComponent<GoombaStomp>();
+
+        bool isFalling = marioBody.linearVelocity.y < 0f;
+
+        bool isAbove =
+            marioCollider.bounds.min.y >= other.bounds.center.y;
+
+        if (goomba != null && isFalling && isAbove)
+        {
+            goomba.Stomp();
+            jumpedState = false;
+
+            marioBody.linearVelocity =
+                new Vector2(marioBody.linearVelocity.x, 0f);
+
+            marioBody.AddForce(
+                Vector2.up * upSpeed * 0.5f,
+                ForceMode2D.Impulse
+            );
+
+            return;
         }
+
+        if (invincible)
+            return;
+
+        // Super Marioなら一度だけ攻撃を耐える
+        if (isSuper)
+        {
+            isSuper = false;
+            transform.localScale = originalScale;
+
+            StartCoroutine(TemporaryInvincibility());
+            return;
+        }
+
+        marioAnimator.Play("mario-die");
+
+        if (marioDeathAudio != null)
+        {
+            marioDeathAudio.PlayOneShot(marioDeath);
+        }
+        else
+        {
+            marioAudio.PlayOneShot(marioDeath);
+        }
+
+        moving = false;
+        alive = false;
     }
-    private void ResetGame()
+
+    private IEnumerator TemporaryInvincibility()
     {
+        invincible = true;
+
+        for (int i = 0; i < 10; i++)
+        {
+            marioSprite.enabled = !marioSprite.enabled;
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        marioSprite.enabled = true;
+        invincible = false;
+    }
+
+    public void GameRestart()
+    {
+        StopAllCoroutines();
+
+        isSuper = false;
+        invincible = false;
+
+        transform.localScale = originalScale;
+        marioSprite.enabled = true;
+
         marioBody.transform.position = marioStartPosition;
         marioBody.linearVelocity = Vector2.zero;
 
         onGroundState = true;
+        jumpedState = false;
+        moving = false;
 
         faceRightState = true;
         marioSprite.flipX = false;
 
-        scoreText.text = "Score: 0";
-
-        foreach (Transform eachChild in enemies.transform)
-        {
-            eachChild.transform.localPosition =
-                eachChild.GetComponent<EnemyMovement>().startPosition;
-        }
-
-        jumpOverGoomba.score = 0;
-
+        marioAnimator.SetBool("onGround", onGroundState);
         marioAnimator.SetTrigger("gameRestart");
+
         alive = true;
 
-        gameCamera.position = new Vector3(0, 0, -10);
+        if (gameCamera != null)
+        {
+            gameCamera.position = cameraStartPosition;
+        }
     }
 }

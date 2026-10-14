@@ -10,35 +10,71 @@ public class QuestionBox : MonoBehaviour
 
     private bool used = false;
 
+    private Sprite originalSprite;
+    private RigidbodyType2D originalBodyType;
+    private Animator boxAnimator;
+
+    void Start()
+    {
+        originalSprite = boxSpriteRenderer.sprite;
+        originalBodyType = boxRigidbody.bodyType;
+        boxAnimator = GetComponent<Animator>();
+
+        GameManager.instance.gameRestart.AddListener(GameRestart);
+    }
+
+    void OnDestroy()
+    {
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.gameRestart.RemoveListener(GameRestart);
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (used || collision.gameObject.name != "Mario")
+        {
             return;
+        }
 
         ContactPoint2D contact = collision.GetContact(0);
 
-        // Activate only when Mario hits the box from below
         if (contact.normal.y > 0.5f)
         {
             used = true;
 
-            // Play the coin spawn animation
             coinAnimator.Play("coin-spawn", 0, 0f);
-
-            // Play the coin sound
             coinAudio.Play();
 
-            // Stop the blinking animation
-            Animator boxAnimator = GetComponent<Animator>();
             if (boxAnimator != null)
+            {
                 boxAnimator.enabled = false;
+            }
 
-            // Change to the empty question box immediately
             boxSpriteRenderer.sprite = emptySprite;
 
-            // Disable the spring
             boxRigidbody.linearVelocity = Vector2.zero;
             boxRigidbody.bodyType = RigidbodyType2D.Static;
         }
+    }
+
+    public void GameRestart()
+    {
+        used = false;
+
+        boxSpriteRenderer.sprite = originalSprite;
+
+        boxRigidbody.bodyType = originalBodyType;
+        boxRigidbody.linearVelocity = Vector2.zero;
+
+        if (boxAnimator != null)
+        {
+            boxAnimator.enabled = true;
+            boxAnimator.Play(0, 0, 0f);
+        }
+
+        coinAnimator.Rebind();
+        coinAnimator.Update(0f);
     }
 }
