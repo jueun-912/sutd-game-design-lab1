@@ -571,7 +571,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -580,6 +580,50 @@ TextureImporter:
       bones: []
       spriteID: 63240e9f874c84796a9382d8818f496c
       internalID: 1057225104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fireball
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 294
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac01013b1734c41789e95e7e4d215b49
+      internalID: -1280855529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flower
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 1172
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0aacbc69cde2b43bf98c8898d10ff758
+      internalID: 80685738
       vertices: []
       indices: 
       edges: []
@@ -610,6 +654,8 @@ TextureImporter:
       cloud: 230505852
       cloud2: -1059070446
       coin: -1076536106
+      fireball: -1280855529
+      flower: 80685738
       ground: -1523138582
       ground-world2: 176161933
       misc-3_0: 1198777401

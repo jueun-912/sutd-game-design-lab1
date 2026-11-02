@@ -55,23 +55,21 @@
         "UserSettings/": true,
         "temp/": true,
         "Temp/": true,
-        
         "**/*.*.meta": true,
         "**/Library": true,
         "**/ProjectSettings": true,
         "**/Temp": true
-        
     },
     "files.associations": {
         "*.asset": "yaml",
         "*.meta": "yaml",
         "*.prefab": "yaml",
-        "*.unity": "yaml",
+        "*.unity": "yaml"
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "SUTD-1.slnx"
+    "dotnet.defaultSolution": "SUTD - lab5.slnx"
 }

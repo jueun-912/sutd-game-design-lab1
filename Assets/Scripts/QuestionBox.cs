@@ -19,24 +19,12 @@ public class QuestionBox : MonoBehaviour
         originalSprite = boxSpriteRenderer.sprite;
         originalBodyType = boxRigidbody.bodyType;
         boxAnimator = GetComponent<Animator>();
-
-        GameManager.instance.gameRestart.AddListener(GameRestart);
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(GameRestart);
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (used || collision.gameObject.name != "Mario")
-        {
             return;
-        }
 
         ContactPoint2D contact = collision.GetContact(0);
 

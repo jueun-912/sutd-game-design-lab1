@@ -9,6 +9,7 @@ public class QuestionBoxPowerupController
 
     private Animator boxAnimator;
     private Rigidbody2D boxBody;
+
     private Vector3 startingPosition;
     private RigidbodyType2D startingBodyType;
     private bool activated;
@@ -20,16 +21,6 @@ public class QuestionBoxPowerupController
 
         startingPosition = transform.localPosition;
         startingBodyType = boxBody.bodyType;
-
-        GameManager.instance.gameRestart.AddListener(GameRestart);
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(GameRestart);
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -43,7 +34,6 @@ public class QuestionBoxPowerupController
         if (player == null || !player.alive)
             return;
 
-        // 상자 아래에서 부딪힌 접촉만 허용
         bool hitFromBelow = false;
 
         for (int i = 0; i < other.contactCount; i++)
@@ -58,7 +48,6 @@ public class QuestionBoxPowerupController
         if (!hitFromBelow)
             return;
 
-        // 생성 애니메이션 중 여러 번 작동하는 것도 방지
         activated = true;
 
         boxAnimator.SetTrigger("spawned");

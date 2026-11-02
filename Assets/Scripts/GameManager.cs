@@ -1,47 +1,28 @@
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : MonoBehaviour
 {
     public IntVariable gameScore;
 
-    public UnityEvent gameStart;
-    public UnityEvent gameRestart;
-    public UnityEvent<int> scoreChange;
-    public UnityEvent gameOver;
+    public SimpleGameEvent onGameStart;
+    public IntGameEvent onUpdateScore;
 
     public int CurrentScore => gameScore.Value;
 
     void Start()
     {
-        gameScore.Value = 0;
+        Time.timeScale = 1f;
 
-        Time.timeScale = 1.0f;
-        gameStart.Invoke();
+        onGameStart.Raise();
         SetScore(gameScore.Value);
-
-        SceneManager.activeSceneChanged += SceneSetup;
-    }
-
-    public void SceneSetup(Scene current, Scene next)
-    {
-        gameStart.Invoke();
-        SetScore(gameScore.Value);
-    }
-
-    void OnDestroy()
-    {
-        SceneManager.activeSceneChanged -= SceneSetup;
     }
 
     public void GameRestart()
     {
+        Time.timeScale = 1f;
+
         gameScore.Value = 0;
         SetScore(gameScore.Value);
-
-        gameRestart.Invoke();
-        Time.timeScale = 1.0f;
     }
 
     public void IncreaseScore(int increment)
@@ -52,12 +33,11 @@ public class GameManager : Singleton<GameManager>
 
     public void SetScore(int score)
     {
-        scoreChange.Invoke(score);
+        onUpdateScore.Raise(score);
     }
 
     public void GameOver()
     {
-        Time.timeScale = 0.0f;
-        gameOver.Invoke();
+        Time.timeScale = 0f;
     }
 }

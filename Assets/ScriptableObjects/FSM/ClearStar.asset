@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3240a4c6843dc4430975f388674f9f75, type: 3}
+  m_Name: ClearStar
+  m_EditorClassIdentifier: Assembly-CSharp::ClearStarAction
+  sound: {fileID: 8300000, guid: 97a450c65284a4a3094ba5c2221a492b, type: 3}

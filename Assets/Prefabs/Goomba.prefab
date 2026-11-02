@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4149017572211489827}
   - component: {fileID: 3799872209832199090}
   - component: {fileID: 8163139558038684611}
-  - component: {fileID: 7122811726401728700}
   m_Layer: 0
   m_Name: Goomba
   m_TagString: Enemy
@@ -167,15 +166,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7122811726401728700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8628397732265615799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 488452b3b2d38453d89e8a772d2c23e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement

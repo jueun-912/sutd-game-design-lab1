@@ -12,29 +12,12 @@ public class HUDManager : MonoBehaviour
     public GameObject hud;
     public GameObject gameOverPanel;
 
-    void Awake()
-    {
-        GameManager.instance.gameStart.AddListener(GameStart);
-        GameManager.instance.gameOver.AddListener(GameOver);
-        GameManager.instance.gameRestart.AddListener(GameStart);
-        GameManager.instance.scoreChange.AddListener(SetScore);
-    }
+    public SimpleGameEvent onGameRestart;
 
     void Start()
     {
         GameStart();
-        SetScore(GameManager.instance.CurrentScore);
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameStart.RemoveListener(GameStart);
-            GameManager.instance.gameOver.RemoveListener(GameOver);
-            GameManager.instance.gameRestart.RemoveListener(GameStart);
-            GameManager.instance.scoreChange.RemoveListener(SetScore);
-        }
+        SetScore(gameScore.Value);
     }
 
     public void GameStart()
@@ -63,6 +46,6 @@ public class HUDManager : MonoBehaviour
 
     public void RestartGame()
     {
-        GameManager.instance.GameRestart();
+        onGameRestart.Raise();
     }
 }

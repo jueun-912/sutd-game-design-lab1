@@ -6,6 +6,8 @@ public class AnimationEventIntTool : MonoBehaviour
     public int parameter;
     public UnityEvent<int> useInt;
 
+    public IntGameEvent onIncrementScore;
+
     public void TriggerIntEvent()
     {
         useInt.Invoke(parameter);
@@ -13,6 +15,6 @@ public class AnimationEventIntTool : MonoBehaviour
 
     public void IncreaseScore(int amount)
     {
-        GameManager.instance.IncreaseScore(amount);
+        onIncrementScore.Raise(amount);
     }
 }

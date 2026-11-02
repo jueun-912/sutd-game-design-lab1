@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -11,36 +9,46 @@ public class CameraController : MonoBehaviour
     private float startX;
     private float endX;
     private float viewportHalfWidth;
+    private Vector3 startPosition;
+
+    void Awake()
+    {
+        startPosition = transform.position;
+    }
 
     void Start()
     {
-
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        Vector3 bottomLeft = Camera.main.ViewportToWorldPoint(
+        Camera cam = GetComponent<Camera>();
+        Vector3 bottomLeft = cam.ViewportToWorldPoint(
             new Vector3(0, 0, 0)
         );
 
         viewportHalfWidth = Mathf.Abs(
-            bottomLeft.x - this.transform.position.x
+            bottomLeft.x - transform.position.x
         );
 
-        offset = this.transform.position.x - player.position.x;
-        startX = this.transform.position.x;
-        endX = endLimit.transform.position.x - viewportHalfWidth;
+        offset = transform.position.x - player.position.x;
+        startX = startPosition.x;
+        endX = endLimit.position.x - viewportHalfWidth;
     }
 
-    void Update()
+    void LateUpdate()
     {
+        if (player == null) return;
+
         float desiredX = player.position.x + offset;
 
-        if (desiredX > startX && desiredX < endX)
-        {
-            this.transform.position = new Vector3(
-                desiredX,
-                this.transform.position.y,
-                this.transform.position.z
-            );
-        }
+        transform.position = new Vector3(
+            Mathf.Clamp(desiredX, startX, endX),
+            transform.position.y,
+            transform.position.z
+        );
+    }
+
+    public void GameRestart()
+    {
+        transform.position = startPosition;
     }
 }

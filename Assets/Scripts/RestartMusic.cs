@@ -5,24 +5,15 @@ public class RestartMusic : MonoBehaviour
 {
     private AudioSource music;
 
-    void Start()
+    void Awake()
     {
         music = GetComponent<AudioSource>();
-        GameManager.instance.gameRestart.AddListener(RestartAudio);
     }
 
-    void RestartAudio()
+    public void RestartAudio()
     {
         AudioListener.pause = false;
         music.Stop();
         music.Play();
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(RestartAudio);
-        }
     }
 }

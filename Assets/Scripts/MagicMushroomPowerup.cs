@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class MagicMushroomPowerup : BasePowerup
 {
+    public PowerupGameEvent onPowerupCollected;
+
     private Collider2D mushroomCollider;
     private SpriteRenderer mushroomRenderer;
     private Animator mushroomAnimator;
@@ -22,16 +24,6 @@ public class MagicMushroomPowerup : BasePowerup
         startingPosition = transform.localPosition;
 
         PrepareHidden();
-
-        GameManager.instance.gameRestart.AddListener(GameRestart);
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(GameRestart);
-        }
     }
 
     private void PrepareHidden()
@@ -58,7 +50,6 @@ public class MagicMushroomPowerup : BasePowerup
         if (!readyToCollect || consumed)
             return;
 
-        // 横方向の壁に当たったら進行方向を変える
         for (int i = 0; i < col.contactCount; i++)
         {
             if (Mathf.Abs(col.GetContact(i).normal.x) > 0.5f)
@@ -95,17 +86,21 @@ public class MagicMushroomPowerup : BasePowerup
         if (!readyToCollect || consumed)
             return;
 
-        PlayerMovement player =
-            other.GetComponentInParent<PlayerMovement>();
+        // 접촉한 대상이 Player인지 확인
+        Rigidbody2D otherBody = other.GetComponentInParent<Rigidbody2D>();
 
-        if (player == null || !player.alive)
+        bool isPlayer = other.CompareTag("Player") ||
+            (otherBody != null && otherBody.CompareTag("Player"));
+
+        if (!isPlayer)
             return;
 
         consumed = true;
+        readyToCollect = false;
 
-        ApplyPowerup(player);
+        // 마리오를 직접 호출하지 않고 SO 이벤트 발생
+        onPowerupCollected.Raise(this);
 
-        // Destroyせず隠すのでリスタート時に復元できる
         mushroomRenderer.enabled = false;
         mushroomCollider.enabled = false;
 
@@ -139,7 +134,6 @@ public class MagicMushroomPowerup : BasePowerup
         rigidBody.bodyType = RigidbodyType2D.Dynamic;
         rigidBody.gravityScale = 1f;
 
-        // Dynamicへの変更後、物理更新を待つ
         yield return new WaitForFixedUpdate();
 
         rigidBody.AddForce(
